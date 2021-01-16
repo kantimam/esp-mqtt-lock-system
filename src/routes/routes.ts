@@ -2,8 +2,9 @@ import { deleteAccess, editAccess, getAccess, getAccesses } from '../controllers
 import { deleteEvent, editEvent, getEvent, getEvents } from '../controllers/eventController';
 import { addKey, editKey, getKey, getKeys, deleteKey } from '../controllers/keyController';
 import { deleteNewKey, editNewKey, getNewKey, getNewKeys } from '../controllers/newKeyController';
-import { syncAllKeys, deleteAllKeys, getReaders, addReaderKeys, openDoor, getReaderWithKeys, generateReaderKeys, generateAllReaderKeys, editReaderKeys } from '../controllers/readerController';
-import createUser from '../controllers/userController';
+import { syncAllKeys, deleteAllKeys, openDoor, generateReaderKeys, generateAllReaderKeys} from '../controllers/deviceController';
+import { getReaders, addReaderKeys, getReaderWithKeys, editReaderKeys } from '../controllers/readerController';
+import  {signUp, editUser, getUsers, getUserById } from '../controllers/userController';
 import { checkAuth } from '../middlewares/middlewares';
 import { client } from '../mqtt/connection';
 /* import { client } from '../mqtt/connection';
@@ -20,7 +21,7 @@ router.post(
   } */),
   async (req, res) => {
     req.session.myUser = "hello world";
-
+    https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFiClientSecure
     res.send({
       message: "you logged in successfully",
       user: req.user,
@@ -41,20 +42,16 @@ router.get("/testuser", (req, res) => {
   res.send("got user");
 });
 
-router.post("/signup", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      // if no user / password found dont bother trying to signup
-      return res.status(500).send("no username or password found");
-    }
-    const user = await createUser(username, password);
-    return res.status(201).send("succesfully created user: " + user);
-  } catch (e) {
-    // status conflict most likely user with that name already exists
-    res.status(409).send(e);
-  }
-});
+router.post("/signup", signUp);
+
+
+router.get("/user", getUsers)
+
+router.get("/user/:id", getUserById)
+
+router.put("/user/:id", editUser)
+
+router.post("/user", signUp);
 
 
 // TODO: split the routes into different files
@@ -119,10 +116,13 @@ router.get("/deleteall/:id", deleteAllKeys)
 
 router.get("/syncall/:id", syncAllKeys)
 
+router.get("/devicekey"/* , checkAuth */, generateAllReaderKeys)
+
+router.get("/devicekey/:id"/* , checkAuth */, generateReaderKeys)
+
 router.get("/readerkey"/* , checkAuth */, generateAllReaderKeys)
 
 router.get("/readerkey/:id"/* , checkAuth */, generateReaderKeys)
-
 
 router.post("/readerkey"/* , checkAuth */, addReaderKeys)
 

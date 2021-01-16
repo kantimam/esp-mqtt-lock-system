@@ -10,19 +10,11 @@ export const setupMqtt = () => {
 
     client.on("error", (err) => console.log(err))
     client.on('connect', function () {
-
         client.subscribe('devnfc/#', function (err) {
-
+            
         })
         client.subscribe('devnfc', function (err) {
             if (!err) {
-                /* console.log("was called")
-                client.publish("devnfc/sync", JSON.stringify({
-                    type: "heartbeat",
-                    ip: "test",
-                    time: 1515151351,
-                    door: "delete this"
-                })) */
             }
         })
     })
